@@ -19,9 +19,9 @@ int main(int argc,char *argv[]) {
 	//±‰¡ø
 	void* jfif = NULL;
 
-	bmp.load(&b, argv[1]);
+	bmp.bmp_load(&b, argv[1]);
 	jfif = b2j.encod(&b);
-	bmp.free(&b);
+	bmp.bmp_free(&b);
 	b2j.save(jfif, argv[2]);
 	b2j.free(jfif);
 

@@ -20,8 +20,8 @@ typedef struct {
 	DWORD  biClrImportant;  //重要的调色板索引数
 } BMPFILEHEADER;
 
-//bmp�ļ���ȡ��
 class Bmp {
+private:
 	//BMP图像的主要数据
 	int width;
 	int height;
@@ -29,9 +29,10 @@ class Bmp {
 	void *pdata;
 
 	// 字节对齐
-	static int ALIGN(int x, int y){
+	int ALIGN(int x, int y){
 		return (x+y-1)&~(y-1);
 	}
+public:
 	//BMP文件加载
 	int bmp_load(BMP *pb, char *file)
 	{
@@ -65,7 +66,7 @@ class Bmp {
 		pb->width = w;
 		pb->height = h;
 		pb->stride = ALIGN(w*3, 4);
-		pb->data = malloc(pb->stride*h);
+		pb->pdata = malloc(pb->stride*h);
 		return pb->pdata?0:-1;
 	}
 
@@ -90,10 +91,10 @@ class Bmp {
 		fp = fopen(file, "wb");
 		if(fp){
 			fwrite(&header, sizeof(header), 1, fp);
-			pdata = (BYTE*)pb->data + pb->stride * pb->height;
+			pdata = (BYTE*)pb->pdata + pb->stride * pb->height;
 			for(i=0;i<pb->height;i++){
 				pdata -= pb->stride;
-				fwrite(pdata, pb->stride, 1, fp)
+				fwrite(pdata, pb->stride, 1, fp);
 			}
 			fclose(fp);
 		}
