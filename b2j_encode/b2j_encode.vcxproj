@@ -144,6 +144,7 @@
     <ClCompile Include="dct.cpp" />
     <ClCompile Include="huffman.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="quant.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="b2j.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="dct.h" />
     <ClInclude Include="huffman.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="quant.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
