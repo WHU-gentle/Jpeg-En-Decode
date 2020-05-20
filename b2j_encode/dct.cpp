@@ -6,11 +6,11 @@
 //dct变换类
 class Dct {
 private:
-	static int g_inited = 0; // 标志是否进行了初始化
-	static int g_fdctfactor[64] = {0};
-	static int g_idctfactor[64] = {0};
+	int g_inited = 0; // 标志是否进行了初始化
+	int g_fdctfactor[64] = {0};
+	int g_idctfactor[64] = {0};
 	//AA&N优化算法  ？？？
-	static const float AAN_DCT_FACTOR[DCTSIZE] = {
+	const float AAN_DCT_FACTOR[DCTSIZE] = {
 		1.0f, 1.387039845f, 1.306562965f, 1.175875602f,
     	1.0f, 0.785694958f, 0.541196100f, 0.275899379f,
 	};
@@ -31,7 +31,7 @@ public:
 				factor[i*8 + j] = 1.0f / (AAN_DCT_FACTOR[i]*AAN_DCT_FACTOR[j]*8);
 		}
 		for(i=0;i<64;i++)
-			g_fdctffactor[i] = FLOAT2FIX(factor[i]);  // *2048
+			g_fdctfactor[i] = FLOAT2FIX(factor[i]);  // *2048
 		//decode阶段idct变化
 		for(i=0; i<DCTSIZE; i++){
 			for(j=0;j<DCTSIZE;j++)

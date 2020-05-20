@@ -1,5 +1,5 @@
 #pragma once
-
+#include"main.h"
 typedef struct
 {
     int   width;   /* ¿í¶È */

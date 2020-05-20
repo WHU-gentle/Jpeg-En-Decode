@@ -20,10 +20,10 @@ int main(int argc,char *argv[]) {
 	void* jfif = NULL;
 
 	bmp.bmp_load(&b, argv[1]);
-	jfif = b2j.encod(&b);
+	jfif = b2j.jfif_encode(&b);
 	bmp.bmp_free(&b);
-	b2j.save(jfif, argv[2]);
-	b2j.free(jfif);
+	b2j.jfif_save(jfif, argv[2]);
+	b2j.jfif_free(jfif);
 
 	return 0;
 }

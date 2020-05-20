@@ -1,5 +1,5 @@
 #pragma once
-
+#include"main.h"
 #define MAX_HUFFMAN_CODE_LEN 16
 
 

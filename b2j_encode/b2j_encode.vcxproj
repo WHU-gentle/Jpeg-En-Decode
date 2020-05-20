@@ -141,6 +141,7 @@
     <ClCompile Include="b2j.cpp" />
     <ClCompile Include="bitstream.cpp" />
     <ClCompile Include="bmp.cpp" />
+    <ClCompile Include="color.cpp" />
     <ClCompile Include="dct.cpp" />
     <ClCompile Include="huffman.cpp" />
     <ClCompile Include="main.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="b2j.h" />
     <ClInclude Include="bitstream.h" />
     <ClInclude Include="bmp.h" />
+    <ClInclude Include="color.h" />
     <ClInclude Include="dct.h" />
     <ClInclude Include="huffman.h" />
     <ClInclude Include="main.h" />
