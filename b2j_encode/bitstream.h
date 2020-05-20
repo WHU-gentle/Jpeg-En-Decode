@@ -5,26 +5,6 @@ extern "C" {
 #endif
 
 #define USE_JPEG_BITSTR 1  // 是否使用JPEG格式的编码
-	enum {
-		BITSTR_MEM = 0,
-		BITSTR_FILE
-	};
-	// file bitstr
-	typedef struct {
-		int type;
-		DWORD bitbuf;
-		int bitnum;
-		FILE* fp;
-	}FBITSTR;
-
-	typedef struct {
-		int type;
-		DWORD bitbuf;
-		int bitnum;
-		BYTE* membuf;
-		int memlen;  // memory len
-		int curpos;  // current position
-	}MBITSTR;
 
 
 	class BitStream {

@@ -1,8 +1,13 @@
 #pragma once
 #include"main.h"
+#include"bitstream.h"
 #define MAX_HUFFMAN_CODE_LEN 16
 
+typedef uint8_t BYTE;
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
 
+//huffman定义
 /* 编码表项类型定义 */
 typedef struct
 {
@@ -26,6 +31,9 @@ typedef struct
 
 //哈夫曼编码类
 class Huffman {
+private:
+    BitStream bitStream;
+    void huffman_stat_freq(HUFCODEITEM codelist[256], void* stream);
 public:
     // flag == 0, init from code freq list
     // flag == 1, init from huffman table

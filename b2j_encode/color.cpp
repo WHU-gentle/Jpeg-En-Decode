@@ -1,9 +1,7 @@
-#include"main.h"
+#include"color.h"
 
 //负责rgb颜色转换
-class Color {
-public:
-    void yuv_to_rgb(int y, int u, int v, BYTE* r, BYTE* g, BYTE* b)
+    void Color::yuv_to_rgb(int y, int u, int v, BYTE* r, BYTE* g, BYTE* b)
     {
         int tr, tg, tb;
 
@@ -20,7 +18,7 @@ public:
 
     // rgb - 8bits unsigned integer
     // yuv - 32bit signed fixed q2
-    void rgb_to_yuv(BYTE r, BYTE g, BYTE b, int* y, int* u, int* v)
+    void Color::rgb_to_yuv(BYTE r, BYTE g, BYTE b, int* y, int* u, int* v)
     {
         *y = FLOAT2FIX(0.2990f) * r + FLOAT2FIX(0.5870f) * g + FLOAT2FIX(0.1140f) * b - (128 << FIXQ);
         *u = FLOAT2FIX(-0.1678f) * r - FLOAT2FIX(0.3313f) * g + FLOAT2FIX(0.5000f) * b;
@@ -29,4 +27,3 @@ public:
         *u >>= FIXQ - 2;
         *v >>= FIXQ - 2;
     }
-};

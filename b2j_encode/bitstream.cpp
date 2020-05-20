@@ -1,8 +1,6 @@
-#include"main.h"
+#include"bitstream.h"
 
-class BitStream {
-	/*从文件打开bit流*/
-private:
+
 	void* fbitstr_open(char* file, char* mode)
 	{
 		//分配空间
@@ -137,20 +135,19 @@ private:
 		return stream ? 0 : EOF;
 	}
 
-public:
 	/*
 	bit str
 	*/
-	void* bitstr_open(void* fnamebuf, char* fmode, int bufsize)
+	void* BitStream::bitstr_open(void* fnamebuf, char* fmode, int bufsize)
 	{
 		// 选择从文件中读取还是从内存中读取
-		if (strcmp(fmode, "mem") == 0)
+		//if (strcmp(fmode, "mem") == 0)
 			return mbitstr_open((void*)fnamebuf, bufsize);
-		else
-			return fbitstr_open((char*)fnamebuf, fmode);
+		//else
+		//	return fbitstr_open((char*)fnamebuf, fmode);
 	}
 	// 根据bitstr类型关闭字节流
-	int bitstr_close(void* stream)
+	int BitStream::bitstr_close(void* stream)
 	{
 		int type = *(int*)stream;
 		switch (type) {
@@ -160,7 +157,7 @@ public:
 		return EOF;
 	}
 
-	int bitstr_getc(void* stream)
+	int BitStream::bitstr_getc(void* stream)
 	{
 		int type = *(int*)stream;
 		switch (type) {
@@ -170,7 +167,7 @@ public:
 		return EOF;
 	}
 
-	int bitstr_putc(int c, void* stream)
+	int BitStream::bitstr_putc(int c, void* stream)
 	{
 		int type = *(int*)stream;
 		switch (type) {
@@ -180,7 +177,7 @@ public:
 		return EOF;
 	}
 
-	int bitstr_seek(void* stream, long offset, int origin)
+	int BitStream::bitstr_seek(void* stream, long offset, int origin)
 	{
 		int type = *(int*)stream;
 		switch (type) {
@@ -190,7 +187,7 @@ public:
 		return EOF;
 	}
 
-	long bitstr_tell(void* stream)
+	long BitStream::bitstr_tell(void* stream)
 	{
 		int type = *(int*)stream;
 		if (!stream) return EOF;
@@ -201,7 +198,7 @@ public:
 		return EOF;
 	}
 
-	int bitstr_getb(void* stream)
+	int BitStream::bitstr_getb(void* stream)
 	{
 		int bit, flag = 0;
 		FBITSTR* context = (FBITSTR*)stream;
@@ -229,7 +226,7 @@ public:
 		return bit;
 	}
 
-	int bitstr_putb(int b, void* stream)
+	int BitStream::bitstr_putb(int b, void* stream)
 	{
 		FBITSTR* context = (FBITSTR*)stream;
 		if (!context) return EOF;
@@ -255,7 +252,7 @@ public:
 		return b;
 	}
 	// n次循环 取到的bit从高到底排列到buf中
-	int bitstr_get_bits(void* stream, int n)
+	int BitStream::bitstr_get_bits(void* stream, int n)
 	{
 		int buf = 0;
 		while (n--) {
@@ -265,7 +262,7 @@ public:
 		return buf;
 	}
 
-	int bitstr_put_bits(void* stream, int bits, int n)
+	int BitStream::bitstr_put_bits(void* stream, int bits, int n)
 	{
 		unsigned buf = bits << (32 - n);
 		while (n--) {
@@ -277,7 +274,7 @@ public:
 		return bits;
 	}
 
-	int bitstr_flush(void* stream, int flag)
+	int BitStream::bitstr_flush(void* stream, int flag)
 	{
 		FBITSTR* context = (FBITSTR*)stream;
 		if (!context) return EOF;
@@ -292,4 +289,3 @@ public:
 		}
 		return EOF;
 	}
-};

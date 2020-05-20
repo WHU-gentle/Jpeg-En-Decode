@@ -1,13 +1,6 @@
 #include"main.h"
-
-//全局结构
-typedef struct
-{
-	int   width;   /* 宽度 */
-	int   height;  /* 高度 */
-	int   stride;  /* 行字节数 */
-	void* pdata;   /* 指向数据 */
-} BMP;
+#include"bmp.h"
+#include"b2j.h"
 
 int main(int argc,char *argv[]) {
 	if(argc<3)

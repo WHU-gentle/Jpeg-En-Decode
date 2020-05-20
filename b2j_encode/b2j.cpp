@@ -1,12 +1,6 @@
-#include"main.h"
-
+#include"b2j.h"
 //主调用类
-class B2J {
-private:
-    //调用的类
-    Dct dct; BitStream bitStream; Huffman huffman; Color color; Quant quant;
-
-    int ALIGN(int x, int y) {//补齐16的倍数
+    int ALIGN_b(int x, int y) {//补齐16的倍数
         // y must be a power of 2.
         return (x + y - 1) & ~(y - 1);
     }
@@ -48,7 +42,7 @@ private:
         unsigned codedata : 16;
     } RLEITEM;
     //逐块编码过程
-    void jfif_encode_du(JFIF* jfif, int type, int du[64], int* dc)
+    void B2J::jfif_encode_du(JFIF* jfif, int type, int du[64], int* dc)
     {
         HUFCODEC* hfcac = jfif->phcac[type];//AC编码
         HUFCODEC* hfcdc = jfif->phcdc[type];//DC编码
@@ -110,8 +104,8 @@ private:
             bitStream.bitstr_put_bits(bs, rlelist[i].codedata, rlelist[i].codesize);
         }
     }
-public:
-	void* jfif_encode(BMP* pb) {
+
+	void* B2J::jfif_encode(BMP* pb) {
 
         //局部变量
         JFIF* jfif = NULL;//结构体建立
@@ -125,7 +119,8 @@ public:
         int   dc[4] = { 0 };//记录DC的开始系数
         int   i, j, m, n;
         int   failed = 1;//失败标志
-        char* temp = new char[3];
+        char temp[3] = { 'm','e','m' };
+        
 
         // 检查输入
         if (!pb) {
@@ -133,17 +128,24 @@ public:
             return NULL;
         }
 
+        // allocate jfif context
+        jfif = (JFIF*)calloc(1, sizeof(JFIF));
+        if (!jfif) return NULL;
+
+        // init dct module
+        dct.init_dct_module();
+
         //空间分配
         jfif->width = pb->width;
         jfif->height = pb->height;
         jfif->pqtab[0] = (int*)malloc(64 * sizeof(int));//量化表1
         jfif->pqtab[1] = (int*)malloc(64 * sizeof(int));//量化表2
-        jfif->phcac[0] = calloc(1, sizeof(HUFCODEC));//亮度AC
-        jfif->phcac[1] = calloc(1, sizeof(HUFCODEC));//色度AC
-        jfif->phcdc[0] = calloc(1, sizeof(HUFCODEC));//亮度DC
-        jfif->phcdc[1] = calloc(1, sizeof(HUFCODEC));//色度DC
+        jfif->phcac[0] = (HUFCODEC*)calloc(1, sizeof(HUFCODEC));//亮度AC
+        jfif->phcac[1] = (HUFCODEC*)calloc(1, sizeof(HUFCODEC));//色度AC
+        jfif->phcdc[0] = (HUFCODEC*)calloc(1, sizeof(HUFCODEC));//亮度DC
+        jfif->phcdc[1] = (HUFCODEC*)calloc(1, sizeof(HUFCODEC));//色度DC
         jfif->datalen = jfif->width * jfif->height * 2;
-        jfif->databuf = malloc(jfif->datalen);
+        jfif->databuf = (BYTE*)malloc(jfif->datalen);
         if (!jfif->pqtab[0] || !jfif->pqtab[1]
             || !jfif->phcac[0] || !jfif->phcac[1]
             || !jfif->phcdc[0] || !jfif->phcdc[1]
@@ -156,7 +158,6 @@ public:
         memcpy(jfif->pqtab[1], STD_QUANT_TAB_CHROM, 64 * sizeof(int));
 
         // open bit stream
-        strcmp(temp, "mem");
         bs = bitStream.bitstr_open(jfif->databuf, temp, jfif->datalen);
         if (!bs) {
             printf("failed to open bitstr for jfif_decode !");
@@ -195,8 +196,8 @@ public:
         jfif->comp_info[2].htab_idx_dc = 1;
 
         // init jw & jw, init yuv data buffer
-        jw = ALIGN(pb->width, 16);//对齐16，例如100个像素，变为112个
-        jh = ALIGN(pb->height, 16);
+        jw = ALIGN_b(pb->width, 16);//对齐16，例如100个像素，变为112个
+        jh = ALIGN_b(pb->height, 16);
         yuv_datbuf[0] = (int*)calloc(1, jw * jh / 1 * sizeof(int));
         yuv_datbuf[1] = (int*)calloc(1, jw * jh / 4 * sizeof(int));
         yuv_datbuf[2] = (int*)calloc(1, jw * jh / 4 * sizeof(int));
@@ -324,7 +325,7 @@ public:
 	}
 
     //空间释放
-    void jfif_free(void* ctxt)
+    void B2J::jfif_free(void* ctxt)
     {
         JFIF* jfif = (JFIF*)ctxt;
         int   i;
@@ -339,7 +340,7 @@ public:
     }
 
     //将数据写入jpg文件
-    int jfif_save(void* ctxt, char* file)
+    int B2J::jfif_save(void* ctxt, char* file)
     {
         JFIF* jfif = (JFIF*)ctxt;
         FILE* fp = NULL;
@@ -438,4 +439,3 @@ public:
         if (fp) fclose(fp);
         return ret;
     }
-};

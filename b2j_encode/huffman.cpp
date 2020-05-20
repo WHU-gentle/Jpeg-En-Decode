@@ -1,4 +1,4 @@
-#include"main.h"
+#include"huffman.h"
 
 //默认的JPEG哈夫曼编码表,有色度AC,DC和亮度AC,DC
 const BYTE STD_HUFTAB_LUMIN_AC[] =
@@ -45,10 +45,17 @@ const BYTE STD_HUFTAB_CHROM_DC[] =
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
 };
 
-//哈夫曼编码类
-class Huffman {
-private:
-    BitStream bitStream;
+
+static int cmp_freq_item(const void* a, const void* b)
+{
+    return ((HUFCODEITEM*)a)->freq - ((HUFCODEITEM*)b)->freq;
+}
+
+static int cmp_depth_item(const void* a, const void* b)
+{
+    return ((HUFCODEITEM*)a)->depth - ((HUFCODEITEM*)b)->depth;
+}
+
     //哈夫曼将symbol转化为code,记录size和code
     void huffman_encode_init_from_huftab(HUFCODEC* phc)
     {
@@ -80,7 +87,7 @@ private:
     }
 
     /* 统计符号串中各个符号出现的频率 */
-    void huffman_stat_freq(HUFCODEITEM codelist[256], void* stream)
+    void Huffman::huffman_stat_freq(HUFCODEITEM codelist[256], void* stream)
     {
         int  data;
         int  i;
@@ -248,19 +255,8 @@ private:
         }
     }
 
-    static int cmp_freq_item(const void* a, const void* b)
-    {
-        return ((HUFCODEITEM*)a)->freq - ((HUFCODEITEM*)b)->freq;
-    }
-
-    static int cmp_depth_item(const void* a, const void* b)
-    {
-        return ((HUFCODEITEM*)a)->depth - ((HUFCODEITEM*)b)->depth;
-    }
-public:
-
     //初始化选择
-    void huffman_encode_init(HUFCODEC* phc, int flag)
+    void Huffman::huffman_encode_init(HUFCODEC* phc, int flag)
     {
         if (flag) {
             huffman_encode_init_from_huftab(phc);
@@ -271,7 +267,7 @@ public:
     }
 
     //逐个编码
-    bool huffman_encode_step(HUFCODEC* phc, int data)
+    bool Huffman::huffman_encode_step(HUFCODEC* phc, int data)
     {
         unsigned code;
         int      len;
@@ -289,13 +285,13 @@ public:
     }
 
     //清理内存
-    void huffman_encode_done(HUFCODEC* phc)
+    void Huffman::huffman_encode_done(HUFCODEC* phc)
     {
         /* flush bitstr */
         bitStream.bitstr_flush(phc->output, 1);
     }
 
-    void huffman_decode_init(HUFCODEC* phc)
+    void Huffman::huffman_decode_init(HUFCODEC* phc)
     {
         int i;
 
@@ -324,7 +320,7 @@ public:
 #endif
     }
 
-    int huffman_decode_step(HUFCODEC* phc)
+    int Huffman::huffman_decode_step(HUFCODEC* phc)
     {
         int bit;
         int code = 0;
@@ -349,8 +345,7 @@ public:
         return idx < MAX_HUFFMAN_CODE_LEN + 256 ? phc->huftab[idx] : EOF;
     }
 
-    void huffman_decode_done(HUFCODEC* phc)
+    void Huffman::huffman_decode_done(HUFCODEC* phc)
     {
         //do nothing
     }
-};

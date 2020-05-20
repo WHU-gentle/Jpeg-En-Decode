@@ -1,8 +1,18 @@
 #pragma once
 //主调用类声明
-#include"main.h"
+#include"dct.h"
+#include"color.h"
+#include"bitstream.h"
+#include"huffman.h"
+#include"quant.h"
+#include"bmp.h"
+typedef uint8_t BYTE;
+//编码时,亮度色度标志
+#define DU_TYPE_LUMIN  0
+#define DU_TYPE_CHROM  1
+#define MAX_HUFFMAN_CODE_LEN 16
 
-// 内部类型定义
+// b2j内部类型定义
 typedef struct {
     // width & height
     int       width;
@@ -31,10 +41,6 @@ typedef struct {
     int   datalen;
     BYTE* databuf;
 } JFIF;
-
-//编码时,亮度色度标志
-#define DU_TYPE_LUMIN  0
-#define DU_TYPE_CHROM  1
 
 /* 内部全局变量定义 */
 const int ZIGZAG[64] =
@@ -120,6 +126,9 @@ const BYTE STD_HUFTAB_CHROM_DC[] =
 };
 
 class B2J {
+private:
+    Dct dct; BitStream bitStream; Huffman huffman; Color color; Quant quant;
+    void jfif_encode_du(JFIF* jfif, int type, int du[64], int* dc);
 public:
 	void* jfif_load(char* file);
 	int   jfif_save(void* ctxt, char* file);

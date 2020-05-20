@@ -1,4 +1,4 @@
-#include"main.h"
+#include"bmp.h"
 
 //BMP文件头
 typedef struct {
@@ -20,21 +20,12 @@ typedef struct {
 	DWORD  biClrImportant;  //重要的调色板索引数
 } BMPFILEHEADER;
 
-class Bmp {
-private:
-	//BMP图像的主要数据
-	int width;
-	int height;
-	int stride;
-	void *pdata;
-
 	// 字节对齐
 	int ALIGN(int x, int y){
 		return (x+y-1)&~(y-1);
 	}
-public:
 	//BMP文件加载
-	int bmp_load(BMP *pb, char *file)
+	int Bmp::bmp_load(BMP *pb, char *file)
 	{
 		BMPFILEHEADER header = {0};  // 初始化一个BMP文件头
 		FILE *fp = NULL;  // 文件流指针
@@ -61,7 +52,7 @@ public:
 		return pb->pdata?0:-1;  //返回0说明成功
 	}
 
-	int bmp_create(BMP *pb, int w, int h)
+	int Bmp::bmp_create(BMP *pb, int w, int h)
 	{
 		pb->width = w;
 		pb->height = h;
@@ -70,7 +61,7 @@ public:
 		return pb->pdata?0:-1;
 	}
 
-	int bmp_save(BMP *pb, char *file)
+	int Bmp::bmp_save(BMP *pb, char *file)
 	{
 		//分配空间 定义参数
 		BMPFILEHEADER header = {0};
@@ -101,7 +92,7 @@ public:
 		return fp?0:-1;
 	}
 
-	void bmp_free(BMP *pb)
+	void Bmp::bmp_free(BMP *pb)
 	{
     	if (pb->pdata) {
         	free(pb->pdata);
@@ -111,4 +102,3 @@ public:
     	pb->height = 0;
     	pb->stride = 0;
 	}
-};
