@@ -15,9 +15,9 @@ private:
 	};
 
 	void init_fdct_ftab(int* ftab, int* qtab);
-	void init_idct_ftab(int* ftab, int* qtab);
-	void idct2d8x8(int* data, int* ftab);
 public:
 	void init_dct_module(void);
 	void fdct2d8x8(int* data, int* ftab);
+	void idct2d8x8(int* data, int* ftab);
+	void init_idct_ftab(int* ftab, int* qtab);
 };

@@ -1,10 +1,11 @@
 #include"bmp.h"
 
 //BMP文件头
+#pragma pack(1)
 typedef struct {
 	WORD   bfType;  //必须为"BM"
 	DWORD  bfSize;  //整个BMP文件的大小
-	WORD   bfReserved1;  
+	WORD   bfReserved1;
 	WORD   bfReserved2;
 	DWORD  bfOffBits;  //文件起始位置到图像像素数据的字节偏移量
 	DWORD  biSize;   // BMPFILEHEADER结构体大小
@@ -19,86 +20,91 @@ typedef struct {
 	DWORD  biClrUsed;  //实际使用的调色板索引数
 	DWORD  biClrImportant;  //重要的调色板索引数
 } BMPFILEHEADER;
+#pragma pack()
 
-	// 字节对齐
-	int ALIGN(int x, int y){
-		return (x+y-1)&~(y-1);
+// 字节对齐
+int ALIGN(int x, int y) {
+	return (x + y - 1) & ~(y - 1);
+}
+
+//BMP文件加载
+int Bmp::bmp_load(BMP* pb, char* file)
+{
+	BMPFILEHEADER header = { 0 };  // 初始化一个BMP文件头
+	FILE* fp = NULL;  // 文件流指针
+	BYTE* pdata = NULL;
+	int i;
+
+	fp = fopen(file, "rb");  // 打开文件流
+	if (!fp) return -1;
+
+	fread(&header, sizeof(header), 1, fp);  // 从文件流中读取文件头
+	pb->width = header.biWidth;
+	pb->height = header.biHeight;
+	pb->stride = ALIGN(header.biWidth * 3, 4);
+	pb->pdata = malloc(pb->stride * pb->height);
+	if (pb->pdata) {
+		pdata = (BYTE*)pb->pdata + pb->stride * pb->height;
+		//先读的数据放在下面
+		for (int i = 0; i < pb->height; i++) {
+			pdata -= pb->stride;
+			fread(pdata, pb->stride, 1, fp);
+		}
 	}
-	//BMP文件加载
-	int Bmp::bmp_load(BMP *pb, char *file)
-	{
-		BMPFILEHEADER header = {0};  // 初始化一个BMP文件头
-		FILE *fp = NULL;  // 文件流指针
-		BYTE *pdata = NULL;
-		int i;
+	fclose(fp);
+	return pb->pdata ? 0 : -1;  //返回0说明成功
+}
 
-		fp = fopen(file, "rb");  // 打开文件流
-		if(!fp) return -1;
+//根据数据构造BMP结构体文件
+int Bmp::bmp_create(BMP* pb, int w, int h)
+{
+	pb->width = w;
+	pb->height = h;
+	pb->stride = ALIGN(w * 3, 4);
+	pb->pdata = malloc(pb->stride * h);
+	return pb->pdata ? 0 : -1;
+}
 
-		fread(&header, sizeof(header), 1, fp);  // 从文件流中读取文件头
-		pb->width = header.biWidth;
-		pb->height = header.biHeight;
-		pb->stride = ALIGN(header.biWidth * 3, 4);
-		pb->pdata = malloc(pb->stride * pb->height);
-		if(pb->pdata){
-			pdata = (BYTE*)pb->pdata + pb->stride * pb->height;
-			//先读的数据放在下面
-			for(int i=0;i<pb->height;i++){
-				pdata -= pb->stride;
-				fread(pdata, pb->stride, 1 ,fp);
-			}
+//输出为bmp文件
+int Bmp::bmp_save(BMP* pb, char* file)
+{
+	//分配空间 定义参数
+	BMPFILEHEADER header = { 0 };
+	FILE* fp = NULL;
+	BYTE* pdata;
+	int i;
+	// 填入信息
+	header.bfType = ('B' << 0) | ('M' << 8);  //BMP文件类型
+	header.bfSize = sizeof(header) + pb->stride * pb->height;
+	header.bfOffBits = sizeof(header); //文件头后即为图片起始位置
+	header.biSize = 40;
+	header.biWidth = pb->width;
+	header.biHeight = pb->height;
+	header.biPlanes = 1;
+	header.biBitCount = 24;  //像素位数24位
+	header.biSizeImage = pb->stride * pb->height;
+	// 写入文件
+	fp = fopen(file, "wb");
+	if (fp) {
+		fwrite(&header, sizeof(header), 1, fp);
+		pdata = (BYTE*)pb->pdata + pb->stride * pb->height;
+		for (i = 0; i < pb->height; i++) {
+			pdata -= pb->stride;
+			fwrite(pdata, pb->stride, 1, fp);
 		}
 		fclose(fp);
-		return pb->pdata?0:-1;  //返回0说明成功
 	}
+	return fp ? 0 : -1;
+}
 
-	int Bmp::bmp_create(BMP *pb, int w, int h)
-	{
-		pb->width = w;
-		pb->height = h;
-		pb->stride = ALIGN(w*3, 4);
-		pb->pdata = malloc(pb->stride*h);
-		return pb->pdata?0:-1;
+//释放占用空间
+void Bmp::bmp_free(BMP* pb)
+{
+	if (pb->pdata) {
+		free(pb->pdata);
+		pb->pdata = NULL;
 	}
-
-	int Bmp::bmp_save(BMP *pb, char *file)
-	{
-		//分配空间 定义参数
-		BMPFILEHEADER header = {0};
-		FILE *fp = NULL;
-		BYTE *pdata;
-		int i;
-		// 填入信息
-		header.bfType = ('B' << 0) | ('M' << 8);  //BMP文件类型
-		header.bfSize = sizeof(header) + pb->stride * pb->height;
-		header.bfOffBits = sizeof(header); //文件头后即为图片起始位置
-		header.biSize = 40;
-		header.biWidth = pb->width;
-		header.biHeight = pb->height;
-		header.biPlanes = 1;
-		header.biBitCount = 24;  //像素位数24位
-		header.biSizeImage = pb->stride * pb->height;
-		// 写入文件
-		fp = fopen(file, "wb");
-		if(fp){
-			fwrite(&header, sizeof(header), 1, fp);
-			pdata = (BYTE*)pb->pdata + pb->stride * pb->height;
-			for(i=0;i<pb->height;i++){
-				pdata -= pb->stride;
-				fwrite(pdata, pb->stride, 1, fp);
-			}
-			fclose(fp);
-		}
-		return fp?0:-1;
-	}
-
-	void Bmp::bmp_free(BMP *pb)
-	{
-    	if (pb->pdata) {
-        	free(pb->pdata);
-        	pb->pdata = NULL;
-    	}
-    	pb->width  = 0;
-    	pb->height = 0;
-    	pb->stride = 0;
-	}
+	pb->width = 0;
+	pb->height = 0;
+	pb->stride = 0;
+}

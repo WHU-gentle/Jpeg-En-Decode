@@ -1,4 +1,2 @@
-﻿  bmp.cpp
-E:\Code\Jpeg-En-Decode\b2j_encode\bmp.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-E:\Code\Jpeg-En-Decode\b2j_encode\bmp.cpp(33,7): warning C4101: “i”: 未引用的局部变量
+﻿  main.cpp
   b2j_encode.vcxproj -> E:\Code\Jpeg-En-Decode\x64\Debug\b2j_encode.exe

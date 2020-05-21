@@ -127,7 +127,7 @@ const BYTE STD_HUFTAB_CHROM_DC[] =
 
 class B2J {
 private:
-    Dct dct; BitStream bitStream; Huffman huffman; Color color; Quant quant;
+    Dct dct; BitStream bitStream; Huffman huffman; Color color; Quant quant; Bmp bmp;
     void jfif_encode_du(JFIF* jfif, int type, int du[64], int* dc);
 public:
 	void* jfif_load(char* file);
@@ -136,4 +136,6 @@ public:
 
 	int   jfif_decode(void* ctxt, BMP* pb);
 	void* jfif_encode(BMP* pb);
+
+    int huffman_decode_step(HUFCODEC* phc);
 };
